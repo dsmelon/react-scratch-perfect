@@ -1,0 +1,24 @@
+.___scratch{
+  position: relative;
+  display: inline-block;
+  user-select: none;
+  font-size: 0;
+  &.frozen{
+    pointer-events: none;
+  }
+  .___content{
+    opacity: 0;
+    &.visible{
+      opacity: 1;
+    }
+  }
+  canvas{
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+  }
+}

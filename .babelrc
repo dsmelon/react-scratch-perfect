@@ -1,0 +1,11 @@
+{
+    "presets": [
+        "@babel/preset-react",
+        ["@babel/preset-env", { "targets": "> 2%, ie 11, safari > 9" }]
+        
+    ],
+    "plugins": [
+        "@babel/plugin-transform-runtime",
+        "@babel/plugin-proposal-class-properties"
+    ]
+}
