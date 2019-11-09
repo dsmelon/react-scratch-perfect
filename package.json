@@ -1,6 +1,6 @@
 {
   "name": "react-scratch-perfect",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "刮一刮",
   "main": "lib/index.js",
   "directories": {
