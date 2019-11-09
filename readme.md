@@ -2,6 +2,11 @@
 
 此组件使用图片是未使用getImageData方法,没有跨域问题,使用简单,适合多场景使用
 
+安装
+```cmd
+ npm install react-scratch-perfect --save
+```
+
 例子: [https://dsmelon.github.io/react-scratch-perfect/dist/index.html](https://dsmelon.github.io/react-scratch-perfect/dist/index.html)
 
 **api**
