@@ -1,7 +1,5 @@
 # 欢迎使用react刮一刮组件
 
-**Markdown是一种轻量级的「标记语言」**
-
 此组件使用图片是未使用getImageData方法,没有跨域问题,使用简单,适合多场景使用
 
 例子: [https://dsmelon.github.io/react-scratch-perfect/dist/index.html](https://dsmelon.github.io/react-scratch-perfect/dist/index.html)
