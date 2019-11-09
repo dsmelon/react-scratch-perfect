@@ -1,7 +1,9 @@
 const path = require('path');
 const htmlWebpackPlugin = require('html-webpack-plugin');
+const env = process.env.NODE_ENV;
+const isdebug = env === "development";
 module.exports = {
-  mode: 'development',
+  mode: env,
   
   entry: {
     index: './example/index.jsx'
@@ -30,7 +32,7 @@ module.exports = {
     stats: "errors-only"
   },
 
-  devtool: 'inline-source-map',
+  devtool: isdebug ? "inline-source-map" : false,
 
   watchOptions: {
     ignored: /node_modules/,

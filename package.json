@@ -1,6 +1,6 @@
 {
   "name": "react-scratch-perfect",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "刮一刮",
   "main": "lib/index.js",
   "directories": {
@@ -9,8 +9,8 @@
   },
   "scripts": {
     "build": "webpack --config webpack.config.prod.js",
-    "start": "webpack-dev-server --config webpack.config.dev.js --hot --inline",
-    "example": "webpack --config webpack.config.dev.js"
+    "start": "cross-env NODE_ENV=development webpack-dev-server --config webpack.config.dev.js --hot --inline",
+    "example": "cross-env NODE_ENV=production webpack --config webpack.config.dev.js"
   },
   "author": "dsmelon",
   "license": "ISC",
@@ -22,6 +22,7 @@
     "@babel/preset-react": "^7.6.3",
     "@babel/runtime": "^7.6.3",
     "babel-loader": "^8.0.0-beta.0",
+    "cross-env": "^6.0.3",
     "css-loader": "^3.2.0",
     "html-webpack-plugin": "^3.2.0",
     "less": "^3.10.3",
