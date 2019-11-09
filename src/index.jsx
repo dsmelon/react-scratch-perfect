@@ -54,27 +54,19 @@ export default class extends PureComponent{
         this.ctx.fillStyle = color;
         this.ctx.fillRect(0, 0, cw, ch);
       }
+      this.ptg = 0;
       this.ctx.globalCompositeOperation = 'destination-out';
       this.ctx.strokeStyle = "#000000";
       this.size = size || cw / dpr / 10;
       this.ctx.lineWidth = this.size;
       this.ctx.lineCap = 'round';
       this.round = round;
-      this.cellsX = Math.round(cw / dpr / this.size * 3);
-      this.cellsY = Math.round(ch / dpr / this.size * 3);
       this.cells = [];
-      this.sum = this.cellsX * this.cellsY;
-      this.startCellXAccurate = this.round[3] * 3 / this.size;
-      this.endCellXAccurate = (cw / dpr - this.round[1]) * 3 / this.size;
-      this.startCellYAccurate = this.round[0] * 3 / this.size;
-      this.endCellYAccurate = (ch / dpr - this.round[2]) * 3 / this.size;
-      this.startCellX = Math.floor(this.startCellXAccurate);
-      this.endCellX = Math.floor(this.endCellXAccurate);
-      this.startCellY = Math.floor(this.startCellYAccurate);
-      this.endCellY = Math.floor(this.endCellYAccurate);
-      this.roundLen = (this.endCellX - this.startCellX) * (this.endCellY - this.startCellY);
-      this.roundLenAccurate = (this.endCellXAccurate - this.startCellXAccurate) * (this.endCellYAccurate - this.startCellYAccurate);
-      this.Weighting = this.roundLen / this.roundLenAccurate;
+      this.roundX = [this.round[3], cw / dpr - this.round[1]];
+      this.roundY = [this.round[0], ch / dpr - this.round[2]];
+      this.cellX = (this.roundX[1] - this.roundX[0]) / 10;
+      this.cellY = (this.roundY[1] - this.roundY[0]) / 10;
+      this.sum = this.roundLen = 100;
       while(this.sum--) this.cells.push(false);
       setTimeout(() => {
         this.setState({visible: true});
@@ -98,9 +90,11 @@ export default class extends PureComponent{
       window.addEventListener("mousemove", this.move, false);
       window.addEventListener("mouseup", this.up, false);
     }
-    this.addRound(this.preX, this.preY);
+
+    this.handleRound(this.preX, this.preY);
   }
   move = e => {
+    const { mode = "move" } = this.props;
     let changedTouches = e.changedTouches;
     let preX = this.preX, preY = this.preY;
     this.ctx.beginPath();
@@ -116,9 +110,13 @@ export default class extends PureComponent{
     this.ctx.lineTo(this.preX, this.preY);
     this.ctx.stroke();
     this.canvas.style.zIndex = ((+this.canvas.style.zIndex || 0) + 1) % 2 + 2;
+    this.frame++;
+    this.frame%=2;
     this.addRound(preX, preY, this.preX, this.preY);
+    mode === "move" && this.checkRound(e);
   }
-  up = e => {
+  up = (e, bol) => {
+    const { mode } = this.props;
     let changedTouches = e.changedTouches;
     if(changedTouches){
       window.removeEventListener("touchmove", this.move, false);
@@ -127,28 +125,27 @@ export default class extends PureComponent{
       window.removeEventListener("mousemove", this.move, false);
       window.removeEventListener("mouseup", this.up, false);
     }
-    this.checkRound();
+    mode === "end" && !bol && this.checkRound(e);
   }
   addRound = (preX, preY, curX, curY) => {
     const dx = (curX - preX);
     const dy = (curY - preY);
-    const distance = Math.pow(dx * dx + dy * dy , 0.5);
-    if(distance > this.size){
-      let chunkX,chunkY;
+    if(dx > this.cellX || dy > this.cellY){
+      let chunkX, chunkY;
       if(dy === 0){
-        chunkX = this.size;
+        chunkX = this.cellX;
         chunkY = 0;
       }else if(dx === 0){
-        chunkY = this.size;
+        chunkY = this.cellY;
         chunkX = 0;
       }else{
         const ratio = Math.abs(dy / dx);
-        if(ratio > 1){
-          chunkX = this.size / 2 / ratio;
-          chunkY = this.size / 2;
+        if(ratio > this.cellY / this.cellX){
+          chunkX = this.cellY / 2 / ratio;
+          chunkY = this.cellY / 2;
         }else{
-          chunkY = this.size / 2 * ratio;
-          chunkX = this.size / 2;
+          chunkY = this.cellX / 2 * ratio;
+          chunkX = this.cellX / 2;
         }
       }
       let [sx, ex] = dx > 0 ? [preX, curX] : [curX, preX];
@@ -164,35 +161,34 @@ export default class extends PureComponent{
     }
   }
   handleRound = (curX, curY) => {
-    const posX = Math.floor(curX * 3 / this.size);
-    const posY = Math.floor(curY * 3 / this.size);
-    const pos9 = [];
-    const posX3 = [
-      posX - 1 < this.startCellX || posX - 1 >= this.endCellX ? "" : posX - 1,
-      posX < this.startCellX || posX >= this.endCellX ? "" : posX,
-      posX + 1 < this.startCellX || posX + 1 >= this.endCellX ? "" : posX + 1
-    ];
-    const posY3 = [
-      posY - 1 < this.startCellY || posY - 1 >= this.endCellY ? "" : posY - 1,
-      posY < this.startCellY || posY >= this.endCellY ? "" : posY,
-      posY + 1 < this.startCellY || posY + 1 >= this.endCellY ? "" : posY + 1
-    ];
-    posX3.forEach((v, k) => {
-      posY3.forEach((vv, kk) => {
-        pos9[k * 3 + kk] = v !== "" && vv !== "" ? vv * this.cellsX + v : "";
-      })
-    })
-    pos9.forEach(_=>{
-      _ !== "" && (this.cells[_] = true);
-    })
+    const posX = (curX - this.round[3]) / this.cellX;
+    const posY = (curY - this.round[0]) / this.cellY;
+    const posXr = [Math.floor(posX - this.size / 2 / this.cellX), Math.floor(posX + this.size / 2 / this.cellX)];
+    const posYr = [Math.floor(posY - this.size / 2 / this.cellY), Math.floor(posY + this.size / 2 / this.cellY)];
+    for(let i = posXr[0]; i <= posXr[1]; i++){
+      if(i >= 0 && i < 10){
+        for(let j = posYr[0]; j <= posYr[1]; j++){
+          if(j >= 0 && j < 10){
+            const dx = curX - this.round[3] - (i + 0.5) * this.cellX;
+            const dy = curY - this.round[0] - (j + 0.5) * this.cellY;
+            const index = j * 10 + i;
+            if(dx * dx + dy * dy < this.size * this.size / 4 && !this.cells[index]){
+              this.cells[index] = true;
+              this.ptg++;
+            }
+          }
+        }
+      }
+    }
   }
-  checkRound = () => {
-    const { percentage = 70, onSuccess, clear } = this.props;
-    const ptg = Math.round(this.cells.filter(_ => _).length / this.roundLen * this.Weighting * 100);
-    if(ptg >= percentage){
-      onSuccess && onSuccess(ptg);
+  checkRound = e => {
+    const { percentage = 70, onChange, clear, onSuccess } = this.props;
+    onChange && onChange(this.ptg);
+    if(this.ptg >= percentage){
       clear && this.ctx.clearRect(0, 0, this.state.cw, this.state.ch);
       this.setState({isSuccess: true});
+      this.up(e, true);
+      onSuccess && onSuccess();
     }
   }
   render(){

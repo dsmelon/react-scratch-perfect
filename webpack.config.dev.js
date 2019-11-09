@@ -1,16 +1,15 @@
 const path = require('path');
-const nodeExternals = require('webpack-node-externals');
+const htmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
-  mode: 'production', 
+  mode: 'development',
   
   entry: {
-    index: './src/index.jsx'
+    index: './example/index.jsx'
   },
 
   output: {
-    filename: '[name].js',
-    path: path.resolve(__dirname, "lib"),
-    libraryTarget: 'commonjs2'
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, "dist")
   },
 
   module: {
@@ -23,9 +22,25 @@ module.exports = {
     ]
   },
 
-  externals: [nodeExternals()],
+  devServer: {
+    port: 8000,
+    open: true,
+    hot: true,
+    host: "localhost",
+    stats: "errors-only"
+  },
+
+  devtool: 'inline-source-map',
+
+  watchOptions: {
+    ignored: /node_modules/,
+    poll: false
+  },
 
   plugins: [
-    
+    new htmlWebpackPlugin({
+      template: 'example/index.html',
+      hash: true
+    })
   ]
 }
