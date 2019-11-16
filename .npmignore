@@ -1,3 +1,7 @@
 node_modules
 dist
 example
+webpack.config.dev.js
+webpack.config.example.js
+tsconfig.dev.json
+tsconfig.example.json

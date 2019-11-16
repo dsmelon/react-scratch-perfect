@@ -1,6 +1,6 @@
 import React, {PureComponent} from 'react';
 import ReactDom from 'react-dom';
-import Scratch from '../src/index.jsx';
+import Scratch from '../src/index';
 import './index.scss';
 
 export default class App extends PureComponent{

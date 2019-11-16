@@ -10,13 +10,53 @@ try {
   });
   window.addEventListener("test", null, options);
 } catch(err) {}
-export default class extends PureComponent{
+
+interface props{
+  clear?: boolean;
+  color?: string;
+  className?: string;
+  size?: number;
+  onSuccess?: () => void;
+  onChange?: (p:number) => void;
+  imgRepeat?: "width" | "height" | "repeat";
+  round?: number[];
+  img?: string;
+  mode?: "move" | "end";
+  percentage?: number;
+}
+
+interface state{
+  ch: number;
+  cw: number;
+  isSuccess: boolean;
+  visible: boolean;
+}
+
+export default class extends PureComponent<props, state>{
   state = {
     ch: 0,
     cw: 0,
     isSuccess: false,
     visible: false
   };
+  image: HTMLImageElement;
+  wrap: HTMLDivElement;
+  canvas: HTMLCanvasElement;
+  ptg: number;
+  size: number;
+  round: number[];
+  cells: boolean[];
+  roundX: number[];
+  roundY: number[];
+  cellX: number;
+  cellY: number;
+  sum: number;
+  roundLen: number;
+  offsetLeft: number;
+  offsetTop: number;
+  preX: number;
+  preY: number;
+  ctx: CanvasRenderingContext2D;
   componentDidMount(){
     const { img } = this.props;
     if(img){
@@ -28,7 +68,7 @@ export default class extends PureComponent{
       this.init(false);
     }
   }
-  init = bol => {
+  init = (bol: boolean): void => {
     const { size, round = [0, 0, 0, 0], color = "#808080", imgRepeat } = this.props;
     const ch = this.wrap.clientHeight * dpr;
     const cw = this.wrap.clientWidth * dpr;
@@ -73,15 +113,15 @@ export default class extends PureComponent{
       }, 500);
     });
   }
-  down = e => {
+  down = (e: React.MouseEvent<HTMLCanvasElement> & React.TouchEvent): void => {
     const {left, top} = this.wrap.getClientRects()[0];
     this.offsetLeft = left;
     this.offsetTop = top;
     let changedTouches = e.changedTouches;
     if(changedTouches){
-      changedTouches = changedTouches[0];
-      this.preX = changedTouches.pageX - this.offsetLeft;
-      this.preY = changedTouches.pageY - this.offsetTop;
+      const currentTouch = changedTouches[0];
+      this.preX = currentTouch.pageX - this.offsetLeft;
+      this.preY = currentTouch.pageY - this.offsetTop;
       window.addEventListener("touchmove", this.move, false);
       window.addEventListener("touchend", this.up, false);
     }else{
@@ -93,29 +133,27 @@ export default class extends PureComponent{
 
     this.handleRound(this.preX, this.preY);
   }
-  move = e => {
+  move = (e: MouseEvent & TouchEvent): void => {
     const { mode = "move" } = this.props;
     let changedTouches = e.changedTouches;
     let preX = this.preX, preY = this.preY;
     this.ctx.beginPath();
     this.ctx.moveTo(this.preX, this.preY);
     if(changedTouches){
-      changedTouches = changedTouches[0];
-      this.preX = changedTouches.pageX - this.offsetLeft;
-      this.preY = changedTouches.pageY - this.offsetTop;
+      const currentTouch = changedTouches[0];
+      this.preX = currentTouch.pageX - this.offsetLeft;
+      this.preY = currentTouch.pageY - this.offsetTop;
     }else{
       this.preX = e.pageX - this.offsetLeft;
       this.preY = e.pageY - this.offsetTop;
     }
     this.ctx.lineTo(this.preX, this.preY);
     this.ctx.stroke();
-    this.canvas.style.zIndex = ((+this.canvas.style.zIndex || 0) + 1) % 2 + 2;
-    this.frame++;
-    this.frame%=2;
+    this.canvas.style.zIndex = ((+this.canvas.style.zIndex || 0) + 1) % 2 + 2 + "";
     this.addRound(preX, preY, this.preX, this.preY);
     mode === "move" && this.checkRound(e);
   }
-  up = (e, bol) => {
+  up = (e: TouchEvent & MouseEvent, bol?: boolean): void => {
     const { mode } = this.props;
     let changedTouches = e.changedTouches;
     if(changedTouches){
@@ -127,7 +165,7 @@ export default class extends PureComponent{
     }
     mode === "end" && !bol && this.checkRound(e);
   }
-  addRound = (preX, preY, curX, curY) => {
+  addRound = (preX: number, preY: number, curX: number, curY: number): void => {
     const dx = (curX - preX);
     const dy = (curY - preY);
     if(dx > this.cellX || dy > this.cellY){
@@ -160,7 +198,7 @@ export default class extends PureComponent{
       this.handleRound(curX, curY);
     }
   }
-  handleRound = (curX, curY) => {
+  handleRound = (curX: number, curY: number): void => {
     const posX = (curX - this.round[3]) / this.cellX;
     const posY = (curY - this.round[0]) / this.cellY;
     const posXr = [Math.floor(posX - this.size / 2 / this.cellX), Math.floor(posX + this.size / 2 / this.cellX)];
@@ -181,7 +219,7 @@ export default class extends PureComponent{
       }
     }
   }
-  checkRound = e => {
+  checkRound = (e: TouchEvent & MouseEvent): void => {
     const { percentage = 70, onChange, clear, onSuccess } = this.props;
     onChange && onChange(this.ptg);
     if(this.ptg >= percentage){

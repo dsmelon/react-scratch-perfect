@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "lib": ["es6", "dom", "scripthost", "es2015.symbol"],
+    "target": "es6",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "allowUnreachableCode": true,
+    "allowUnusedLabels": true,
+    "baseUrl": ".",
+    "removeComments": true,
+    "paths": {
+      "@/": ["./src/"]
+    },
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true,
+    "include": ["./example/*"],
+    "exclude": ["node_modules", "*.d.ts"]
+  },
+  "awesomeTypescriptLoaderOptions": {
+    "errorsAsWarnings": true
+  }
+}
