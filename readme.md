@@ -1,6 +1,6 @@
 # 欢迎使用react刮一刮组件
 
-此组件使用图片是未使用getImageData方法,没有跨域问题,使用简单,适合多场景使用
+此组件使用图片时未使用getImageData方法,没有跨域问题,使用简单,适合多场景使用
 
 安装
 ```cmd
@@ -17,7 +17,7 @@
 | clear       | boolean              | false        | 完成后是否清除画布                      |                                                  |
 | color       | string               | #808080      | 刮刮卡的颜色                           |                                                  |
 | img         | string               | 无           | 刮刮卡的填充图片(如果图片加载失败,会使用颜色值)|                                             |
-| imgRepeat   | string               | 无           | 图片填充方式                           | width: 宽度撑满，高度自适应并居中<br/> height: 高度撑满，宽度自适应并居中<br/> repeat: 重复填充无值或者其他值会被拉伸铺满容器 |
+| imgRepeat   | string               | 无           | 图片填充方式                           | width: 宽度撑满，高度自适应并居中<br/> height: 高度撑满，宽度自适应并居中<br/> repeat: 重复填充<br/>无值会被拉伸铺满容器 |
 | size        | number               | 1/10容器宽度  | 画笔直径                               |                                                  |
 | round       | array\[number\]      | \[0,0,0,0\]  | 奖品限定区域,分别为上右下左的padding值   |                                                  |
 | percentage  | number               | 70           | 完成百分比(round之外的不参与计算)        |                                                 |
